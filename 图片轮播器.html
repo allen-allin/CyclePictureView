@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="图片轮播器_style.css">
+</head>
+<body>
+<div id="playimages" class="play">
+    <ul class="big_pic">
+
+		<div class="prev"></div>
+		<div class="next"></div>
+
+		<div class="text">加载图片说明……</div>
+		<div class="length">计算图片数量……</div>
+		
+		<a class="mark_left" href="javascript:;"></a>
+		<a class="mark_right" href="javascript:;"></a>
+		<div class="bg"></div>
+		
+        <li style="z-index:1;"><img src="images图片轮播器/1.jpg" /></li>
+        <li><img src="images图片轮播器/2.jpg" /></li>
+        <li><img src="images图片轮播器/3.jpg" /></li>
+        <li><img src="images图片轮播器/4.jpg" /></li>
+        <li><img src="images图片轮播器/5.jpg" /></li>
+        <li><img src="images图片轮播器/6.jpg" /></li>
+    </ul>
+    <div class="small_pic">
+        <ul style="width:390px;">
+            <li style="filter: 100; opacity: 1;"><img src="images图片轮播器/1.jpg" /></li>
+            <li><img src="images图片轮播器/2.jpg" /></li>
+            <li><img src="images图片轮播器/3.jpg" /></li>
+            <li><img src="images图片轮播器/4.jpg" /></li>
+            <li><img src="images图片轮播器/5.jpg" /></li>
+            <li><img src="images图片轮播器/6.jpg" /></li>
+        </ul>
+    </div>
+</div>
+<script src="startMove().js"></script>
+<script>
+	var oDiv=document.getElementById('playimages');
+	var oBtnNext=oDiv.getElementsByClassName('next')[0];
+	var oBtnPrev=oDiv.getElementsByClassName('prev')[0];
+	var oMarkLeft=oDiv.getElementsByClassName('mark_left')[0];
+	var oMarkRight=oDiv.getElementsByClassName('mark_right')[0];
+	var oDivSmall=oDiv.getElementsByClassName('small_pic')[0];
+	var aLiSmall=oDivSmall.getElementsByTagName('li');
+	var aBigPic=oDiv.getElementsByClassName('big_pic')[0];
+	var aLiBig=aBigPic.getElementsByTagName('li');
+	var oUlSmall=oDivSmall.getElementsByTagName('ul')[0];
+
+	oUlSmall.style.width=aLiSmall.length*aLiSmall[0].offsetWidth+'px';
+
+
+
+	oBtnPrev.onmouseover=oMarkLeft.onmouseover=function() {
+		startMove(oBtnPrev,'opacity',100);
+	}
+	oBtnPrev.onmouseout=oMarkLeft.onmouseout=function() {
+		startMove(oBtnPrev,'opacity',0);
+	}
+	oBtnNext.onmouseover=oMarkRight.onmouseover=function() {
+		startMove(oBtnNext,'opacity',100);
+	}
+	oBtnNext.onmouseout=oMarkRight.onmouseout=function() {
+		startMove(oBtnNext,'opacity',0);
+	}
+	var nowZIndex=2;
+	var now=0;
+	
+
+	function tab() {     //这个函数的中的now在不同的函数中的变化也不同。在小图切换的时候now=this.index
+							//在左右按钮切换的时候now++ 或者now--
+		aLiBig[now].style.zIndex=nowZIndex++;   //图片的轮播是通过让每个图片的zIndex比上一个增加1 来实现的
+		aLiBig[now].style.height=0;
+		startMove(aLiBig[now],'height',320)
+		for (var i = 0; i < aLiSmall.length; i++) {
+			startMove(aLiSmall[i],'opacity',60)
+		}
+		startMove(aLiSmall[now],'opacity',100);
+		if (now==0) {
+			startMove(oUlSmall,'left',0)
+		}else if(now==aLiSmall.length-1){
+			startMove(oUlSmall,'left',-(now-2)*aLiSmall[0].offsetWidth)
+		}else{
+			startMove(oUlSmall,'left',-(now-1)*aLiSmall[0].offsetWidth);
+		}
+	}
+	
+
+	for (var i = 0; i < aLiSmall.length; i++) {
+		aLiSmall[i].index=i;
+		aLiSmall[i].onclick=function() {
+		if (this.index==now) {return};
+		now=this.index; 
+		tab()			
+		}
+		aLiSmall[i].onmouseover=function() {
+			startMove(aLiSmall[this.index],'opacity',100);
+		}
+		aLiSmall[i].onmouseout=function() {
+			if (this.index!=now) {
+			startMove(aLiSmall[this.index],'opacity',60);
+			}
+		}
+		
+	}
+	
+	oBtnPrev.onclick=function() {
+		now--;
+		if (now==-1) {
+			now=aLiSmall.length-1;
+		}
+		tab()
+	}
+	oBtnNext.onclick=function() {
+		now++;
+		if (now==aLiSmall.length) {
+			now=0;
+		}
+		tab()
+	}
+
+	var timer=setInterval(oBtnPrev.onclick,1000);
+	aBigPic.onmouseover=function () {
+		clearInterval(timer);
+	}
+	aBigPic.onmouseout=function () {
+		timer=setInterval(oBtnPrev.onclick,1000);
+	}
+</script>	
+</body>
+</html>
